@@ -24,15 +24,16 @@ def upload_file():
         # Set the path to the ffmpeg executable
         AudioSegment.converter = ffmpeg.get_ffmpeg_exe()
 
-        # Convert .caf to .m4a
+        # Convert .caf to .target
+        format =  'mp3'
         audio = AudioSegment.from_file(caf_path, format='caf')
-        target_path = caf_path.replace('.caf', '.m4a')
-        audio.export(target_path, format='m4a')
+        target_path = caf_path.replace('.caf', '.' + format)
+        audio.export(target_path, format=format)
 
         # Prepare the file for sending
         with open(target_path, 'rb') as f:
             files = {
-                'blob': (os.path.basename(target_path), f, 'audio/m4a')
+                'blob': (os.path.basename(target_path), f, 'audio/' + format)
             }
             response = requests.post(
                 'https://agbdejlfalbotcufcjia.supabase.co/functions/v1/speak',
