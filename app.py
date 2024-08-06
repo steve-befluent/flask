@@ -1,8 +1,8 @@
+import os
 from flask import Flask, request, jsonify
 from pydub import AudioSegment
-import requests
-import os
 import imageio_ffmpeg as ffmpeg
+import requests
 
 app = Flask(__name__)
 
@@ -12,17 +12,14 @@ def hello_world():
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    if 'file' not in request.files:
+    if not request.data:
         return jsonify({"error": "No file part"}), 400
 
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
-
-    if file and file.filename.endswith('.caf'):
-        # Save the uploaded .caf file
-        caf_path = os.path.join('/tmp', file.filename)
-        file.save(caf_path)
+    try:
+        # Save the uploaded raw binary data as a .caf file
+        caf_path = '/tmp/uploaded_audio.caf'
+        with open(caf_path, 'wb') as f:
+            f.write(request.data)
 
         # Set the path to the ffmpeg executable
         AudioSegment.converter = ffmpeg.get_ffmpeg_exe()
@@ -48,7 +45,8 @@ def upload_file():
 
         return jsonify({"status": "File sent", "response": response.json()}), response.status_code
 
-    return jsonify({"error": "Invalid file type"}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
