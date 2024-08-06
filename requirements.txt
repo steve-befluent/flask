@@ -1,2 +1,5 @@
 Flask
 Gunicorn
+pydub
+requests
+imageio[ffmpeg]
