@@ -26,13 +26,13 @@ def upload_file():
 
         # Convert .caf to .m4a
         audio = AudioSegment.from_file(caf_path, format='caf')
-        m4a_path = caf_path.replace('.caf', '.m4a')
-        audio.export(m4a_path, format='m4a')
+        target_path = caf_path.replace('.caf', '.m4a')
+        audio.export(target_path, format='m4a')
 
         # Prepare the file for sending
-        with open(m4a_path, 'rb') as f:
+        with open(target_path, 'rb') as f:
             files = {
-                'blob': (os.path.basename(m4a_path), f, 'audio/m4a')
+                'blob': (os.path.basename(target_path), f, 'audio/m4a')
             }
             response = requests.post(
                 'https://agbdejlfalbotcufcjia.supabase.co/functions/v1/speak',
@@ -41,7 +41,7 @@ def upload_file():
 
         # Clean up temporary files
         os.remove(caf_path)
-        os.remove(m4a_path)
+        os.remove(target_path)
 
         return jsonify({"status": "File sent", "response": response.json()}), response.status_code
 
