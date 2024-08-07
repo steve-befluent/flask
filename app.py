@@ -38,7 +38,8 @@ def upload_file():
         # Prepare the file for sending
         with open(target_path, 'rb') as f:
             files = {
-                'blob': (os.path.basename(target_path), f, 'audio/' + format)
+                'blob': (os.path.basename(target_path), f, 'audio/' + format),
+                'mime': ('audio/' + format)
             }
             response = requests.post(
                 'https://agbdejlfalbotcufcjia.supabase.co/functions/v1/speak',
